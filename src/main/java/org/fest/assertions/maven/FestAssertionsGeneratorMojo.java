@@ -13,22 +13,21 @@ package org.fest.assertions.maven;
  * specific language governing permissions and limitations under the License.
  */
 
+import org.apache.maven.artifact.DependencyResolutionRequiredException;
+import org.apache.maven.plugin.AbstractMojo;
+import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.project.MavenProject;
+import org.fest.assertions.maven.generator.AssertionsGenerator;
+
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.List;
-
-import org.apache.maven.artifact.DependencyResolutionRequiredException;
-import org.apache.maven.plugin.AbstractMojo;
-import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.project.MavenProject;
-
-import org.fest.assertions.maven.generator.AssertionsGenerator;
+import java.util.Map;
 
 /**
  * Generates custom FEST assertions files for provided packages
- * 
  * @goal generate-assertions
  * @phase generate-test-sources
  * @requiresDependencyResolution compile+runtime
@@ -37,28 +36,39 @@ public class FestAssertionsGeneratorMojo extends AbstractMojo {
 
   /**
    * Current maven project
-   * 
    * @parameter expression="${project}"
    * @required
    * @readonly
    */
-  public MavenProject project;
+  MavenProject project;
 
   /**
    * Destination dir to store generated assertion source files. Defaults to
    * 'target/generated-test-sources/fest-assertions'.<br>
    * Your IDE should be able to pick up files from this location as sources automatically when generated.
-   * 
    * @parameter default-value="${project.build.directory}/generated-test-sources/fest-assertions"
    */
-  public String targetDir;
+  String targetDir;
 
   /**
    * List of packages to generate assertions for. Currently only packages are supported.
-   * 
    * @parameter
    */
-  public String[] packages;
+  String[] packages;
+
+  /**
+   * Example:
+   *  <pre>
+   *    &lt;templates&gt;
+   *      &lt;custom&gt;file:/somewhere/myCustomAssertionsTempalte.something&lt;/custom&gt;
+   *    &lt;templates&gt;
+   *  </pre>
+   * @parameter
+   *
+   */
+  Map<String,URL> templates;
+
+
 
   public void execute() throws MojoExecutionException {
     try {
@@ -80,7 +90,11 @@ public class FestAssertionsGeneratorMojo extends AbstractMojo {
   }
 
   private AssertionsGenerator newAssertionGenerator() throws Exception {
-    return new AssertionsGenerator(getProjectClassLoader());
+    AssertionsGenerator assertionsGenerator = new AssertionsGenerator(getProjectClassLoader());
+    for (String type : templates.keySet()) {
+      assertionsGenerator.registerAssertionTemplate(type, templates.get(type));
+    }
+    return assertionsGenerator;
   }
 
   private ClassLoader getProjectClassLoader() throws DependencyResolutionRequiredException, MalformedURLException {
