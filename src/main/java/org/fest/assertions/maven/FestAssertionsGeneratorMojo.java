@@ -13,51 +13,55 @@ package org.fest.assertions.maven;
  * specific language governing permissions and limitations under the License.
  */
 
+import org.apache.maven.artifact.DependencyResolutionRequiredException;
+import org.apache.maven.plugin.AbstractMojo;
+import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugins.annotations.Component;
+import org.apache.maven.plugins.annotations.LifecyclePhase;
+import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.plugins.annotations.ResolutionScope;
+import org.apache.maven.project.MavenProject;
+import org.fest.assertions.maven.generator.AssertionsGenerator;
+
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.List;
 
-import org.apache.maven.artifact.DependencyResolutionRequiredException;
-import org.apache.maven.plugin.AbstractMojo;
-import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.project.MavenProject;
-
-import org.fest.assertions.maven.generator.AssertionsGenerator;
-
 /**
  * Generates custom FEST assertions files for provided packages
- * 
- * @goal generate-assertions
- * @phase generate-test-sources
- * @requiresDependencyResolution compile+runtime
+ *
  */
+@Mojo(name="generate",
+    defaultPhase = LifecyclePhase.GENERATE_TEST_SOURCES,
+    requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME)
 public class FestAssertionsGeneratorMojo extends AbstractMojo {
 
   /**
    * Current maven project
-   * 
-   * @parameter expression="${project}"
-   * @required
-   * @readonly
+   *
    */
+  @Component
   public MavenProject project;
 
   /**
-   * Destination dir to store generated assertion source files. Defaults to
-   * 'target/generated-test-sources/fest-assertions'.<br>
+   * Destination dir to store generated assertion source files.
+   *
    * Your IDE should be able to pick up files from this location as sources automatically when generated.
-   * 
-   * @parameter default-value="${project.build.directory}/generated-test-sources/fest-assertions"
+   *
    */
+  @Parameter(
+      defaultValue = "${project.build.directory}/generated-test-sources/fest-assertions"
+  )
   public String targetDir;
 
   /**
    * List of packages to generate assertions for. Currently only packages are supported.
-   * 
-   * @parameter
+   *
    */
+  @Parameter(required = true)
   public String[] packages;
 
   public void execute() throws MojoExecutionException {
@@ -83,7 +87,7 @@ public class FestAssertionsGeneratorMojo extends AbstractMojo {
     return new AssertionsGenerator(getProjectClassLoader());
   }
 
-  private ClassLoader getProjectClassLoader() throws DependencyResolutionRequiredException, MalformedURLException {
+  private ClassLoader getProjectClassLoader() throws MalformedURLException, DependencyResolutionRequiredException {
     @SuppressWarnings("unchecked")
     List<String> runtimeClasspathElements = project.getRuntimeClasspathElements();
     URL[] runtimeUrls = new URL[runtimeClasspathElements.size()];
