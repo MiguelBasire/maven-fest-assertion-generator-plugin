@@ -23,6 +23,7 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -66,7 +67,7 @@ public class FestAssertionsGeneratorMojo extends AbstractMojo {
    * @parameter
    *
    */
-  Map<String,URL> templates;
+  Map<String,URL> templates = new HashMap<String, URL>();
 
 
 

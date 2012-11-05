@@ -41,7 +41,7 @@ public class AssertionsGeneratorTest {
 
     doAnswer(RETURNS_DEFAULTS).when(mockGenerator).setAssertionClassTemplate(any(Template.class));
 
-    sut.registerAssertionTemplate("CUSTOM", testCustomAssertionTemplate());
+    sut.registerAssertionTemplate("assert_class", testCustomAssertionTemplate());
 
     verify(mockGenerator).setAssertionClassTemplate(any(Template.class));
   }
@@ -83,21 +83,19 @@ public class AssertionsGeneratorTest {
   }
 
   @Test
-  public void should_throw_runtime_exception_when_type_is_unknown(){
+  public void should_throw_runtime_exception_when_type_is_unknown() {
 
-    try{
+    try {
       sut.registerAssertionTemplate("unknown_type", testCustomAssertionTemplate());
-     fail("Unkown type should trigger a runtime exception");
-    }catch(RuntimeException e){
-      assertThat(e).hasMessageStartingWith("No enum constant org.fest.assertions.generator.Template.Type");
+      fail("Unkown type should trigger a runtime exception");
+    } catch (IllegalArgumentException e) {
+      assertThat(e).hasMessageStartingWith("No enum const");
     }
-
   }
 
 
-
   private URL testCustomAssertionTemplate() {
-    return this.getClass().getResource("/somewhere/customTemplate.txt");
+    return this.getClass().getResource("/custom/templates/ClassAssert.txt");
   }
 }
 

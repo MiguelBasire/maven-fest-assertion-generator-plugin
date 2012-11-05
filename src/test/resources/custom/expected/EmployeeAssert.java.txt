@@ -1,0 +1,100 @@
+/**THIS IS MY CUSTOM TEMPLATE*/
+package org.fest.assertions.maven.testdata2;
+
+import static java.lang.String.format;
+
+import org.fest.assertions.api.AbstractAssert;
+import org.fest.assertions.api.Assertions;
+import org.fest.assertions.maven.testdata1.Address;
+
+
+/**
+ * {@link Employee} specific assertions -
+ */
+public class EmployeeAssert extends AbstractAssert<EmployeeAssert, Employee> {
+
+  /**
+   * Creates a new </code>{@link EmployeeAssert}</code> to make assertions on actual Employee.
+   * @param actual the Employee we want to make assertions on.
+   */
+  public EmployeeAssert(Employee actual) {
+    super(actual, EmployeeAssert.class);
+  }
+
+  /**
+   * An entry point for EmployeeAssert to follow Fest standard <code>assertThat()</code> statements.<br>
+   * With a static import, one's can write directly : <code>assertThat(myEmployee)</code> and get specific assertion with code completion.
+   * @param actual the Employee we want to make assertions on.
+   * @return a new </code>{@link EmployeeAssert}</code>
+   */
+  public static EmployeeAssert assertThat(Employee actual) {
+    return new EmployeeAssert(actual);
+  }
+
+  /**
+   * Verifies that the actual Employee's addresses contains the given Address elements.
+   * @param addresses the given elements that should be contained in actual Employee's addresses.
+   * @return this assertion object.
+   * @throws AssertionError if the actual Employee's addresses does not contain all given Address elements.
+   */
+  public EmployeeAssert hasAddresses(Address... addresses) {  
+    // check that actual Employee we want to make assertions on is not null.
+    isNotNull();
+
+    // check that given Address varargs is not null.
+    if (addresses == null) throw new AssertionError("Expecting addresses parameter not to be null.");
+    
+    // check with standard error message (see commented below to set your own message).
+    Assertions.assertThat(actual.getAddresses()).contains(addresses);
+
+    // uncomment the 4 lines below if you want to build your own error message :
+    // WritableAssertionInfo assertionInfo = new WritableAssertionInfo();
+    // String errorMessage = "my error message";
+    // assertionInfo.overridingErrorMessage(errorMessage);
+    // Iterables.instance().assertContains(assertionInfo, actual.getTeamMates(), teamMates);
+    
+    // return the current assertion for method chaining
+    return this;
+  }
+
+  /**
+   * Verifies that the actual Employee has no addresses.
+   * @return this assertion object.
+   * @throws AssertionError if the actual Employee's addresses is not empty.
+   */
+  public EmployeeAssert hasNoAddresses() {  
+    // check that actual Employee we want to make assertions on is not null.
+    isNotNull();
+
+    // we overrides the default error message with a more explicit one
+    String errorMessage = format("Expected actual <%s> not to have addresses but had :\\n%s", actual, actual.getAddresses());
+    
+    // check
+    if (!actual.getAddresses().isEmpty()) throw new AssertionError(errorMessage);
+    
+    // return the current assertion for method chaining
+    return this;
+  }
+  
+
+  /**
+   * Verifies that the actual Employee's name is equal to the given one.
+   * @param name the given name to compare the actual Employee's name to.
+   * @return this assertion object.
+   * @throws AssertionError - if the actual Employee's name is not equal to the given one.
+   */
+  public EmployeeAssert hasName(String name) {
+    // check that actual Employee we want to make assertions on is not null.
+    isNotNull();
+
+    // we overrides the default error message with a more explicit one
+    String errorMessage = format("Expected Employee's name to be <%s> but was <%s>", name, actual.getName());
+    
+    // check
+    if (!actual.getName().equals(name)) { throw new AssertionError(errorMessage); }
+
+    // return the current assertion for method chaining
+    return this;
+  }
+
+}

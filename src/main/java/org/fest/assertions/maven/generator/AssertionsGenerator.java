@@ -1,15 +1,15 @@
 package org.fest.assertions.maven.generator;
 
-import static org.fest.assertions.generator.util.ClassUtil.collectClasses;
+import org.fest.assertions.generator.BaseAssertionGenerator;
+import org.fest.assertions.generator.Template;
+import org.fest.assertions.generator.description.ClassDescription;
+import org.fest.assertions.generator.description.converter.ClassToClassDescriptionConverter;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
 
-import org.fest.assertions.generator.BaseAssertionGenerator;
-import org.fest.assertions.generator.Template;
-import org.fest.assertions.generator.description.ClassDescription;
-import org.fest.assertions.generator.description.converter.ClassToClassDescriptionConverter;
+import static org.fest.assertions.generator.util.ClassUtil.collectClasses;
 
 /** Is able to generate Fest assertions classes from packages. */
 public class AssertionsGenerator {
@@ -36,9 +36,9 @@ public class AssertionsGenerator {
 
     Template.Type type = Template.Type.valueOf(assertionTemplateType.toUpperCase());
 
-    Template template = Template.of(type).from(templateLocation).create();
+    Template template = new Template(type,templateLocation);
     switch (type) {
-      case CUSTOM:
+      case ASSERT_CLASS:
         generator.setAssertionClassTemplate(template);
         break;
       case IS:

@@ -53,15 +53,15 @@ public class FestAssertionsGeneratorMojoTest {
     when(mavenProject.getRuntimeClasspathElements()).thenReturn(classes);
 
     festAssertionsGeneratorMojo.templates = new HashMap<String,URL>(){{
-      put("CUSTOM",this.getClass().getResource("/somewhere/customTemplate.txt"));
+      put("assert_class",this.getClass().getResource("/custom/templates/ClassAssert.txt"));
     }};
 
     festAssertionsGeneratorMojo.execute();
 
     assertThat(assertionsFileFor(Employee.class)).exists();
 
-    File expectedAssertionFileContent = new File(this.getClass().getResource("/expectedAssertions/EmployeeAssert.java.expected").getFile());
-    assertThat(assertionsFileFor(Employee.class)).hasContentEqualTo(expectedAssertionFileContent);
+    File expectedAssertionFile = new File(this.getClass().getResource("/custom/expected/EmployeeAssert.java.txt").toURI());
+    assertThat(assertionsFileFor(Employee.class)).hasContentEqualTo(expectedAssertionFile);
 
   }
 
