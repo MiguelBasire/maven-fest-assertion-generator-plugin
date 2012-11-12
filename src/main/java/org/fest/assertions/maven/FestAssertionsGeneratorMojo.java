@@ -20,6 +20,7 @@ import org.apache.maven.project.MavenProject;
 import org.fest.assertions.maven.generator.AssertionsGenerator;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -61,23 +62,27 @@ public class FestAssertionsGeneratorMojo extends AbstractMojo {
    * Example:
    *  <pre>
    *    &lt;templates&gt;
-   *      &lt;custom&gt;file:/somewhere/myCustomAssertionsTempalte.something&lt;/custom&gt;
+   *      &lt;is&gt;file:/somewhere/myCustomAssertionsTempalte.something&lt;/is&gt;
    *    &lt;templates&gt;
    *  </pre>
    * @parameter
    *
    */
-  Map<String,URL> templates = new HashMap<String, URL>();
+  Map<String,String> templates = new HashMap<String, String>();
 
 
 
   public void execute() throws MojoExecutionException {
     try {
-      newAssertionGenerator().generateAssertionSources(packages, targetDir);
+      AssertionsGenerator assertionsGenerator = newAssertionGenerator();
+      if (!templates.isEmpty()) configureTemplates(assertionsGenerator);
+
+      assertionsGenerator.generateAssertionSources(packages, targetDir);
+
       logExecution();
       project.addTestCompileSourceRoot(targetDir);
     } catch (Exception e) {
-      throw new MojoExecutionException(e.getMessage());
+      throw new MojoExecutionException(e.getMessage(), e);
     }
   }
 
@@ -90,12 +95,22 @@ public class FestAssertionsGeneratorMojo extends AbstractMojo {
     getLog().info("Fest assertions classes have been generated in : " + targetDir);
   }
 
-  private AssertionsGenerator newAssertionGenerator() throws Exception {
-    AssertionsGenerator assertionsGenerator = new AssertionsGenerator(getProjectClassLoader());
+  private AssertionsGenerator newAssertionGenerator() throws IOException, DependencyResolutionRequiredException {
+    return new AssertionsGenerator(getProjectClassLoader());
+  }
+
+  private void configureTemplates(AssertionsGenerator assertionsGenerator) {
     for (String type : templates.keySet()) {
-      assertionsGenerator.registerAssertionTemplate(type, templates.get(type));
+      try {
+        URL templateLocation = new URL(templates.get(type));
+        assertionsGenerator.registerAssertionTemplate(type, templateLocation);
+
+      } catch (IllegalArgumentException unknownTypeException) {
+        getLog().error("Configured template type '" + type + "' is unknown");
+      } catch (MalformedURLException wrongUrlException) {
+        getLog().error("Configured '" + type + "' template's url is wrong:" + templates.get(type) + ". Using the default.");
+      }
     }
-    return assertionsGenerator;
   }
 
   private ClassLoader getProjectClassLoader() throws DependencyResolutionRequiredException, MalformedURLException {

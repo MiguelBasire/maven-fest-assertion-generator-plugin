@@ -7,7 +7,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 
@@ -52,8 +51,8 @@ public class FestAssertionsGeneratorMojoTest {
     List<String> classes = newArrayList(Employee.class.getName(), Address.class.getName());
     when(mavenProject.getRuntimeClasspathElements()).thenReturn(classes);
 
-    festAssertionsGeneratorMojo.templates = new HashMap<String,URL>(){{
-      put("assert_class",this.getClass().getResource("/custom/templates/ClassAssert.txt"));
+    festAssertionsGeneratorMojo.templates = new HashMap<String,String>(){{
+      put("assert_class",this.getClass().getResource("/custom/templates/ClassAssert.txt").toExternalForm());
     }};
 
     festAssertionsGeneratorMojo.execute();

@@ -5,7 +5,6 @@ import org.fest.assertions.generator.Template;
 import org.fest.assertions.generator.description.ClassDescription;
 import org.fest.assertions.generator.description.converter.ClassToClassDescriptionConverter;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
 
@@ -18,7 +17,7 @@ public class AssertionsGenerator {
   private ClassLoader classLoader;
   private BaseAssertionGenerator generator;
 
-  public AssertionsGenerator(ClassLoader classLoader) throws FileNotFoundException, IOException {
+  public AssertionsGenerator(ClassLoader classLoader) throws IOException {
     this.generator = new BaseAssertionGenerator();
     this.converter = new ClassToClassDescriptionConverter();
     this.classLoader = classLoader;
@@ -32,6 +31,12 @@ public class AssertionsGenerator {
     }
   }
 
+  /**
+   *
+   * @param assertionTemplateType template type to override
+   * @param templateLocation template url
+   * @throws IllegalArgumentException when assertionTemplateType is unknown
+   */
   public void registerAssertionTemplate(String assertionTemplateType, URL templateLocation) {
 
     Template.Type type = Template.Type.valueOf(assertionTemplateType.toUpperCase());
