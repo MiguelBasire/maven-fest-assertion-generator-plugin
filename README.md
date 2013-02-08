@@ -68,7 +68,16 @@ You can also specify non-standard destination directory for assertion files usin
 ```
 
 
-An optional configuration `templates` element might be used to override some default templates:
+It could be useful in some cases where default templates do not look as they should be (eg. team convention).
+A set of 5 assertion type templates is defined:
+ 
+ * `is` 
+ * `has` 
+ * `has-for-iterable` 
+ * `has-for-array`
+ * `custom-class`  
+
+The *optional* configuration `templates` element might be used to override some default templates among the assertion types defined earlier:
 
 ```xml
 <configuration>
@@ -82,15 +91,5 @@ An optional configuration `templates` element might be used to override some def
     </templates>
 </configuration>
 ```
-
-It could be useful in some cases where default templates do not look as they should be (eg. team convention).
-You can redefine 5 assertion type templates:
- * `custom-class`:
- * `is` : acts on boolean properties
- * `has` : acts on any properties but boolean one
- * `has-for-iterable`: acts on anye Iterable propertie
- * `has-for-array`: acts on any Array properties
-
-
 
 Have good assertions !
